@@ -1,6 +1,5 @@
 -- May take knowledge of LUA to modify. Contact on discord for help: veryappropriatename
 
-
 local circleCenter = vector3(342.5406, -1398.013, 32.55817)
 local npcCenter = vector4(342.5406, -1398.013, 32.55817, 59.527554)
 local circleRadius = 1.0
@@ -23,16 +22,8 @@ end)
 local medics = false
 local blip = nil
 
-
-
-RegisterNetEvent('os_revivestation:client:receiveCount')
-AddEventHandler('os_revivestation:client:receiveCount', function(count)
-    if count > 0 then
-        medics = true
-        RemoveBlip(blip)
-    else
-        medics = false
-        AddTextEntry('label', 'Health Care')
+function bliping()
+        AddTextEntry('label', 'Revive Station')
         blip = AddBlipForCoord(circleCenter)
         SetBlipSprite(blip, 621)
         SetBlipDisplay(blip, 2)
@@ -41,13 +32,23 @@ AddEventHandler('os_revivestation:client:receiveCount', function(count)
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("label")
         EndTextCommandSetBlipName(blip)
+end
+
+RegisterNetEvent('os_revivestation:client:receiveCount')
+AddEventHandler('os_revivestation:client:receiveCount', function(count)
+    if count > 1 then
+        medics = true
+        RemoveBlip(blip)
+    else
+        medics = false
+        bliping()
     end
 end)
 
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(2000)
+        Citizen.Wait(5000)
         TriggerServerEvent('os_revivestation:client:count')
     end
 end)
@@ -68,14 +69,14 @@ Citizen.CreateThread(function()
                 spawned = true
             end
             if playerHealth <= 0 then
-                DisplayHelpText("Press ~INPUT_CONTEXT~ to be revived.")
+                DisplayHelpText("Drücke ~INPUT_CONTEXT~ um dich zu Reviven.")
                 DrawMarker(27, circleCenter.x, circleCenter.y, circleCenter.z - 1.0, 0, 0, 0, 0, 0, 0, circleRadius * 2.0, circleRadius * 2.0, 1.0, 255, 0, 0, 200, false, true, 2, nil, nil, false)
 
                 if distance <= circleRadius and IsControlJustReleased(0, 38) then
                     TriggerEvent('esx_ambulancejob:revive')
                 end
             elseif playerHealth <= 150 then
-                DisplayHelpText("Press ~INPUT_CONTEXT~ to heal yourself.")
+                DisplayHelpText("Drücke ~INPUT_CONTEXT~ um dich zu Heilen.")
                 DrawMarker(27, circleCenter.x, circleCenter.y, circleCenter.z - 1.0, 0, 0, 0, 0, 0, 0, circleRadius * 2.0, circleRadius * 2.0, 1.0, 0, 255, 0, 200, false, true, 2, nil, nil, false)
 
                 if distance <= circleRadius and IsControlJustReleased(0, 38) then
@@ -85,10 +86,10 @@ Citizen.CreateThread(function()
                 DrawMarker(27, circleCenter.x, circleCenter.y, circleCenter.z - 1.0, 0, 0, 0, 0, 0, 0, circleRadius * 2.0, circleRadius * 2.0, 1.0, 0, 0, 255, 200, false, true, 2, nil, nil, false)
 
                 if distance <= circleRadius then
-                    DisplayHelpText("You're not injured.")
+                    DisplayHelpText("Du hast keine verletzungen.")
                 end
                 if distance <= circleRadius and IsControlJustReleased(0, 38) then
-                    ESX.ShowNotification('Cry about it.')
+                    ESX.ShowNotification('Wein drüber.')
                 end
             end
         else
@@ -136,3 +137,4 @@ function DeleteNPC()
         spawned = false
     end
 end
+
