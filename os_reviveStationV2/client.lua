@@ -21,8 +21,11 @@ end)
 
 local medics = false
 local blip = nil
+local showing = true
+local blipCreated = false
 
 function bliping()
+    if showing and not blipCreated then
         AddTextEntry('label', 'Revive Station')
         blip = AddBlipForCoord(circleCenter)
         SetBlipSprite(blip, 621)
@@ -32,19 +35,25 @@ function bliping()
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("label")
         EndTextCommandSetBlipName(blip)
+        blipCreated = true
+    end
 end
 
 RegisterNetEvent('os_revivestation:client:receiveCount')
 AddEventHandler('os_revivestation:client:receiveCount', function(count)
     if count > 1 then
         medics = true
-        RemoveBlip(blip)
+        showing = false
+        if blipCreated then
+            RemoveBlip(blip)
+            blipCreated = false
+        end
     else
         medics = false
+        showing = true
         bliping()
     end
 end)
-
 
 Citizen.CreateThread(function()
     while true do
@@ -52,6 +61,7 @@ Citizen.CreateThread(function()
         TriggerServerEvent('os_revivestation:client:count')
     end
 end)
+
 
 Citizen.CreateThread(function()
     while true do
@@ -137,4 +147,6 @@ function DeleteNPC()
         spawned = false
     end
 end
+
+
 
