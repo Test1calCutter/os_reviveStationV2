@@ -1,5 +1,4 @@
-ESX = nil
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end) -- If an error is being spammed, use "ESX = exports['es_extended']:getSharedObject()" instead.
+ESX = exports['es_extended']:getSharedObject()
 
 function CountAmbulanceJob()
   local count = 0
